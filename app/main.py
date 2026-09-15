@@ -1,20 +1,21 @@
+import app.db.base
+from app.core.logging import configure_logging
+from app.domains.auth import auth_routes
+from app.domains.company import routes as company_routes
+from app.domains.user import routes as user_routes
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_swagger import patch_fastapi
 
-from .db.lifespan import lifespan
 from .core.config import settings
-from app.domains.auth import auth_routes
-from app.domains.user import routes as user_routes
-
-from app.core.logging import configure_logging
+from .db.lifespan import lifespan
 
 configure_logging()
 
 
 app = FastAPI(
-    app_name = settings.APP_NAME,
-    lifespan = lifespan,
+    app_name=settings.APP_NAME,
+    lifespan=lifespan,
     docs_url=None,
 )
 
@@ -33,13 +34,14 @@ app.add_middleware(
 
 app.include_router(auth_routes.router)
 app.include_router(user_routes.router)
+app.include_router(company_routes.router)
+
 
 @app.get("/health")
 async def health():
-    return {
-        "status": "ok"
-    }
-    
+    return {"status": "ok"}
+
+
 @app.get("/")
 def root():
     return {

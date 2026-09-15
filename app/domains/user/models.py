@@ -1,7 +1,8 @@
-from sqlalchemy import Integer, String, Boolean
-from sqlalchemy.orm import Mapped, mapped_column
-from ...db.postgres import Base
-from ...core.mixins import TimestampMixin
+from app.core.mixins import TimestampMixin
+from app.db.postgres import Base
+# from app.domains.company.models import Company
+from sqlalchemy import Boolean, Integer, String
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 
 class User(Base, TimestampMixin):
@@ -17,6 +18,8 @@ class User(Base, TimestampMixin):
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     is_superuser: Mapped[bool] = mapped_column(Boolean, default=False)
     is_verified: Mapped[bool] = mapped_column(Boolean, default=False)
+
+    companies: Mapped[list["Company"]] = relationship("Company", back_populates="owner")
 
     def __repr__(self) -> str:
         return f"<User(id={self.id}, mail={self.email}, active={self.is_active})>"

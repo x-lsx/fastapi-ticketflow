@@ -1,16 +1,19 @@
 from logging.config import fileConfig
-from sqlalchemy.ext.asyncio import create_async_engine
-from sqlalchemy import pool
+
 from alembic import context
+from sqlalchemy import pool
+from sqlalchemy.ext.asyncio import create_async_engine
 
 config = context.config
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-from app.db.postgres import Base 
-from app.domains.user.models import User
-from app.core.config import settings  
+import app.db.base
+
+# from app.domains.user.models import User
+from app.core.config import settings
+from app.db.postgres import Base
 
 target_metadata = Base.metadata
 
@@ -59,4 +62,5 @@ if context.is_offline_mode():
             context.run_migrations()
 else:
     import asyncio
+
     asyncio.run(run_migrations_online())

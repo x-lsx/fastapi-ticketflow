@@ -1,6 +1,5 @@
-from typing import Optional
-from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from .models import User
 
@@ -9,10 +8,10 @@ class UserRepository:
     def __init__(self, db: AsyncSession):
         self.db = db
 
-    async def get_by_id(self, user_id: int) -> Optional[User]:
+    async def get_by_id(self, user_id: int) -> User | None:
         return await self.db.get(User, user_id)
 
-    async def get_by_email(self, email: str) -> Optional[User]:
+    async def get_by_email(self, email: str) -> User | None:
         result = await self.db.execute(select(User).where(User.email == email))
         return result.scalars().first()
     
@@ -23,7 +22,7 @@ class UserRepository:
         await self.db.refresh(user)
         return user
     
-    async def update(self, user_id: int, update_data: dict) -> User:
+    async def update(self, user_id: int, update_data: dict) -> User | None:
         user = await self.get_by_id(user_id)
         if not user:
             return None
