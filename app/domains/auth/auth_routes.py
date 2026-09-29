@@ -1,12 +1,19 @@
 from fastapi import APIRouter, Body, Depends, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.dependencies import get_current_user
 from app.db.postgres import get_db
 from app.db.redis import get_redis
 from app.domains.auth.auth_service import AuthService
-from .token_schemas import TokenResponse, RefreshTokenRequest
-from app.domains.user.schemas import UserCreate, UserLogin, UserChangePassword, UserResetPasswordRequest, UserForgotPasswordRequest
-from app.core.dependencies import get_current_user
+from app.domains.user.schemas import (
+    UserChangePassword,
+    UserCreate,
+    UserForgotPasswordRequest,
+    UserLogin,
+    UserResetPasswordRequest,
+)
+
+from .token_schemas import RefreshTokenRequest, TokenResponse
 
 router = APIRouter(
     prefix="/auth",
@@ -73,10 +80,11 @@ async def request_password_reset(
 
 @router.post("/reset-password")
 async def reset_password(
+    token: str = Query(...),
     data: UserResetPasswordRequest = Body(...),
     db: AsyncSession = Depends(get_db),
     redis=Depends(get_redis)
 ):
     auth_service = AuthService(db, redis)
-    await auth_service.confirm_reset_password(data.email, data.new_password)
-    return {"detail": "Password reset email sent"}
+    await auth_service.confirm_reset_password(token, data.new_password)
+    return {"detail": "norm"}

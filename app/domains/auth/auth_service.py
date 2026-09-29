@@ -1,5 +1,6 @@
-import jwt
 import logging
+
+import jwt
 from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -9,17 +10,16 @@ from app.core.jwt_utils import (
     create_refresh_token,
     decode_refresh_token,
 )
-
-
 from app.core.security import hashed_password, verify_password
 from app.db.redis import Redis
 from app.domains.user.repository import UserRepository
-from .token_schemas import TokenResponse
-from app.domains.user.schemas import UserCreate, UserChangePassword
-from .token_service import TokenService
-from app.tasks.test import login_debug_task
+from app.domains.user.schemas import UserChangePassword, UserCreate
 from app.tasks.send_confirmation_email import send_confirmation_email
 from app.tasks.send_reset_password_email import send_password_reset_email
+from app.tasks.test import login_debug_task
+
+from .token_schemas import TokenResponse
+from .token_service import TokenService
 
 
 def build_token_response(
@@ -173,7 +173,7 @@ class AuthService:
             send_password_reset_email.delay(
                 to_email=user.email,
                 reset_url=f"{
-                    settings.FRONTEND_URL}auth/reset-password?token={token}",
+                    settings.FRONTEND_URL}/auth/reset-password?token={token}",
             )
             return
         self.logger.info("user not found")

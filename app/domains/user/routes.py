@@ -14,5 +14,9 @@ router = APIRouter(
 
 
 @router.get("/profile")
-async def get_profile(user=Depends(get_current_user)):
-    return user
+async def get_profile(
+    db: AsyncSession = Depends(get_db),
+    user = Depends(get_current_user)
+    ):
+    service = UserService(db)
+    return await service.get_user_by_id(user.id)

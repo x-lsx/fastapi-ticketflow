@@ -6,6 +6,7 @@ from app.domains.user.repository import UserRepository
 from ..db.postgres import get_db
 
 security = HTTPBearer()
+security_optional = HTTPBearer(auto_error=False)
 
 async def get_current_user_id(credentials: HTTPAuthorizationCredentials = Depends(security)) -> int:
     try:
@@ -33,3 +34,19 @@ async def get_current_user(
         )
     
     return user
+
+
+async def get_optional_user(
+    credentials: HTTPAuthorizationCredentials | None = Depends(security_optional),
+    db=Depends(get_db),
+):
+    """Возвращает текущего пользователя или None, если токен отсутствует/невалиден."""
+    if credentials is None:
+        return None
+    try:
+        token_payload = decode_access_token(credentials.credentials)
+        user_id = int(token_payload.sub)
+    except Exception:
+        return None
+    user_repo = UserRepository(db)
+    return await user_repo.get_by_id(user_id)

@@ -1,11 +1,14 @@
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi_swagger import patch_fastapi
+
 import app.db.base
 from app.core.logging import configure_logging
 from app.domains.auth import auth_routes
 from app.domains.company import routes as company_routes
 from app.domains.user import routes as user_routes
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi_swagger import patch_fastapi
+from app.domains.venue.router import router as venue_router
+from app.domains.event.router import router as event_router
 
 from .core.config import settings
 from .db.lifespan import lifespan
@@ -35,6 +38,8 @@ app.add_middleware(
 app.include_router(auth_routes.router)
 app.include_router(user_routes.router)
 app.include_router(company_routes.router)
+app.include_router(venue_router)
+app.include_router(event_router)
 
 
 @app.get("/health")

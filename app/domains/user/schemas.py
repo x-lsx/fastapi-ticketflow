@@ -1,6 +1,6 @@
-from pydantic import BaseModel, EmailStr, Field, ConfigDict
-from typing import Optional
 from datetime import datetime
+
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 
 class UserLogin(BaseModel):
@@ -15,9 +15,7 @@ class UserLogin(BaseModel):
             }
         }
     )
-
-
-
+ 
 class UserCreate(BaseModel):
     first_name: str = Field(None, description="User's first name")
     last_name: str = Field(None, description="User's last name")
@@ -35,8 +33,8 @@ class UserCreate(BaseModel):
         }
     )
 class UserUpdate(BaseModel):
-    first_name: Optional[str] = Field(None, description="User's first name")
-    last_name: Optional[str] = Field(None, description="User's last name")
+    first_name: str | None = Field(None, description="User's first name")
+    last_name: str | None = Field(None, description="User's last name")
     model_config = ConfigDict(
         json_schema_extra={
             "example": {
@@ -49,8 +47,8 @@ class UserUpdate(BaseModel):
 class UserResponse(BaseModel):
     id: int = Field(..., description="User ID")
     email: str = Field(..., description="User's email address")
-    first_name: Optional[str] = Field(None, description="User's first name")
-    last_name: Optional[str] = Field(None, description="User's last name")
+    first_name: str | None = Field(None, description="User's first name")
+    last_name: str | None = Field(None, description="User's last name")
     is_active: bool = Field(..., description="Indicates if the user is active")
     is_superuser: bool = Field(..., description="Indicates if the user has superuser privileges")
     is_verified: bool = Field(..., description="Indicates if the user's email is verified")
@@ -70,5 +68,4 @@ class UserForgotPasswordRequest(BaseModel):
 
 
 class UserResetPasswordRequest(BaseModel):
-    email: EmailStr = Field(..., description="User's email address")
     new_password: str = Field(..., description="User's new password", min_length=4)
